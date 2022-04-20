@@ -82,9 +82,7 @@ public:
 
     void get_all_Kepler() {
         std::cout << "KEPLER ELEMENTS\n" << "N " << N << "\n" << "i " << (i) << "\n" << "w " << w << "\n" << "a " << a
-                  << "\n" << "e " << e
-                  << "\n"
-                  << "M " << M << "\n";
+                  << "\n" << "e " << e << "\n" << "M " << M << "\n";
     };
 
     void get_all_Cartesian() {
