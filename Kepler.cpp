@@ -13,22 +13,22 @@ private:
     double a; //Semimajor axis
     double e; //Eccentricity
     double M; //Mean anomaly
-    double r;
-    double v;
-    double xh;
-    double yh;
-    double zh;
-    double lonecl;
-    double latecl;
 
+    double x;
+    double y;
+    double z;
+    double vx;
+    double vy;
+    double vz;
+
+    double m = 1.32712440019E+20;
 public:
-    Position() {};
 
-    Position(double d, double ecl) {
+    Position(double d) {
         N = rad(ostatok(0.0, 360.0));
         i = rad(0.0);
         w = rad(282.9404 + 4.70935E-5 * d);
-        a = 1.000000;// * 149597870700;
+        a = 1.000000 * 149597870700;
         e = 0.016709 - 1.151E-9 * d;
         M = rad(ostatok(356.0470 + 0.9856002585 * d, 360.0));
     };
@@ -47,37 +47,49 @@ public:
         return res;
     }
 
+    double calcE(const double M, double e) {
+        double E = M;
+        while (std::abs(E - M - e * sin(E)) > 0.0001)
+            E = E - (E - e * sin(E) - M) / (1 - e * cos(E));
+        std::cout << "M = " << M << "   E - e*sinE= " << E - e * sin(E) << "\n";
+        return E;
+    }
+
     void Calculating_Cartesian() {
 
-        double E = M + e * sin(M) * (1.0 + e * cos(M)); //the eccentric anomaly E
-        double xv = a * (cos(E) - e);
-        double yv = a * (sqrt(1.0 - e * e) * sin(E));
+        double E = calcE(M, e);
+        double v = 2 * atan2(sqrt(1 + e) * sin(E / 2), sqrt(1 - e) * cos(E / 2));
+        double r = a * (1 - e * cos(E));
 
-        v = atan2(yv, xv); //the true anomaly v
-        r = sqrt(xv * xv + yv * yv);  //the Sun's distance r
+        double ox = r * cos(v);
+        double oy = r * sin(v);
+        double oz = 0;
+        double ovx = -sqrt(a) / r * sin(E);
+        double ovy = sqrt(a) / r * sqrt(1 - e * e) * cos(E);
+        double ovz = 0;
 
-        xh = r * (cos(N) * cos(v + w) - sin(N) * sin(v + w) * cos(i));
-        yh = r * (sin(N) * cos(v + w) + cos(N) * sin(v + w) * cos(i));
-        zh = r * (sin(v + w) * sin(i));
+        x = ox * (cos(w) * cos(N) - sin(w) * cos(i) * sin(N)) - oy * (sin(w) * cos(N) + cos(w) * cos(i) * sin(N));
+        y = ox * (cos(w) * sin(N) + sin(w) * cos(i) * cos(N)) + oy * (cos(w) * cos(i) * cos(N) - sin(w) * sin(N));
+        z = ox * (sin(w) * sin(i)) + oy * (cos(w) * sin(i));
 
-        lonecl = atan2(yh, xh); //the ecliptic longitude
-        latecl = atan2(zh, sqrt(xh * xh + yh * yh)); //the ecliptic latitude
-
+        vx = ovx * (cos(w) * cos(N) - sin(w) * cos(i) * sin(N)) - ovy * (sin(w) * cos(w) + cos(w) * cos(i) * sin(N));
+        vy = ovx * (cos(w) * sin(w) + sin(w) * cos(i) * cos(N)) + ovy * (cos(w) * cos(i) * cos(w) - sin(w) * sin(N));
+        vz = ovx * (sin(w) * sin(i)) + ovy * (cos(w) * sin(i));
 
     };
 
     void Calculating_Kepler() {};
 
     void get_all_Kepler() {
-        std::cout << "KEPLER ELEMENTS\n" << "N " << N << "\n" << "i " << i << "\n" << "w " << w << "\n" << "a " << a
+        std::cout << "KEPLER ELEMENTS\n" << "N " << N << "\n" << "i " << (i) << "\n" << "w " << w << "\n" << "a " << a
                   << "\n" << "e " << e
                   << "\n"
                   << "M " << M << "\n";
     };
 
     void get_all_Cartesian() {
-        std::cout << "CARTESIAN COORDINATES\n" << "r " << r << "\n" << "v " << v << "\n" << "xh " << xh << "\n" << "yh "
-                  << yh << "\n" << "zh " << zh << "\n" "lonec1 " << lonecl << "\n" << "latecl " << latecl << "\n";
+        std::cout << "CARTESIAN COORDINATES\n" << "x " << x << "\n" << "y " << y << "\n" << "z " << z << "\n" << "vx "
+                  << vx << "\n" << "vy " << vy << "\n" "vz " << vz << "\n";
     };
 
 };
