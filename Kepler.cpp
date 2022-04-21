@@ -27,12 +27,20 @@ public:
             x(x), y(y), z(z), vx(vx), vy(vy), vz(vz) {};
 
     Position(double d) {
-        N = rad(ostatok(0.0, 360.0));
+        //sun
+        /*N = rad(ostatok(0.0, 360.0));
         i = rad(0.0);
         w = rad(282.9404 + 4.70935E-5 * d);
         a = 1.000000 * 149597870700;
         e = 0.016709 - 1.151E-9 * d;
-        M = rad(ostatok(356.0470 + 0.9856002585 * d, 360.0));
+        M = rad(ostatok(356.0470 + 0.9856002585 * d, 360.0));*/
+        //mercury
+        N = rad(ostatok(48.3313 + 3.24587E-5 * d, 360.0));
+        i = rad(7.0047 + 5.00E-8 * d);
+        w = rad(29.1241 + 1.01444E-5 * d);
+        a = 0.387098 * 149597870700;
+        e = 0.205635 + 5.59E-10 * d;
+        M = rad(ostatok(168.6562 + 4.0923344368 * d, 360.0));
     };
 
     ~Position() {};
@@ -94,47 +102,46 @@ public:
         std::vector<double> r = {x, y, z};
         std::vector<double> dr = {vx, vy, vz};
         std::vector<double> h = vectmul(r, dr);
+        std::cout << "vec h: " << h[0] << " " << h[1] << " " << h[2] << "\n";
         std::vector<double> ve = 1 / m * vectmul(dr, h) - 1 / norm(r) * r;
+        std::cout << "vec e: " << ve[0] << " " << ve[1] << " " << ve[2] << "\n";
         std::vector<double> n = {-h[1], h[0], 0.0};
+        std::cout << "vec n: " << n[0] << " " << n[1] << " " << n[2] << "\n";
         double v;
 
-        if (r * dr >= 0){
-            if(norm(r)>0 && norm(dr)>0)
+        if (r * dr >= 0) {
+            if (norm(r) > 0 && norm(dr) > 0)
                 v = acos(ve * r / norm(ve) / norm(r));
             else
                 v = M_PI / 2.0;
-        }
-        else
+        } else
             v = 2 * M_PI - acos(ve * r / norm(ve) / norm(r));
 
-        if(norm(h) == 0){
+        if (norm(h) != 0) {
             i = acos(h[2] / norm(h));
-        }
-        else
-            i =  M_PI / 2.0;
+        } else
+            i = M_PI / 2.0;
         e = norm(ve);
         double E;
-        if( e != 0)
+        if (e != 0)
             E = atan(tan(v / 2) / sqrt((1 + e) / (1 - e)));
         else
             E = 0;
 
-        if (n[1] >= 0){
-            if(norm(n)>0)
+        if (n[1] >= 0) {
+            if (norm(n) > 0)
                 N = acos(n[0] / norm(n));
             else
                 N = M_PI / 2.0;
-        }
-        else
+        } else
             N = 2 * M_PI - acos(n[0] / norm(n));
 
-        if (ve[2] >= 0){
-            if(norm(n)>0 && norm(ve)>0)
+        if (ve[2] >= 0) {
+            if (norm(n) > 0 && norm(ve) > 0)
                 w = acos(ve * n / norm(ve) / norm(n));
             else
                 w = M_PI / 2.0;
-        }
-        else
+        } else
             w = 2 * M_PI - acos(ve * n / norm(ve) / norm(n));
 
         M = E - e * sin(E);
