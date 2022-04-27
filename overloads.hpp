@@ -47,4 +47,12 @@ T norm(const std::vector<T> &vector) {
     norm = std::sqrt(norm);
     return norm;
 }
+template<typename T>
+std::ostream& operator<<(std::ostream &os, std::vector<T>& vec) {
+    std::cout<<"(";
+    for(auto& e: vec)
+        std::cout<<e<<" ";
+    std::cout<<")\n";
+    return os;
+}
 
