@@ -120,7 +120,6 @@ public:
         else
             E = 0.0;
 
-        std::cout << "n= " << n;
         if (n[1] >= 0) {
             if (norm(n) > 0)
                 N = acos(n[0] / norm(n));
@@ -129,7 +128,6 @@ public:
         } else
             N = 2 * M_PI - acos(n[0] / norm(n));
 
-        std::cout << "ve= " << ve;
         if (ve[2] >= 0) {
             if (norm(n) > 0 && norm(ve) > 0)
                 w = acos(ve * n / norm(ve) / norm(n));
