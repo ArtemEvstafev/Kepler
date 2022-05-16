@@ -57,3 +57,12 @@ std::ostream &operator<<(std::ostream &os, std::vector<T> &vec) {
     return os;
 }
 
+template<typename T>
+std::vector<T> vectmul(const std::vector<T> &c, const std::vector<T> &b) {
+    std::vector<T> result(c.size());
+    result[0] = c[1] * b[2] - b[1] * c[2];
+    result[1] = -c[0] * b[2] + b[0] * c[2];
+    result[2] = c[0] * b[1] - b[0] * c[1];
+    return result;
+}
+
